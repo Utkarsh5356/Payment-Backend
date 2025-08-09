@@ -11,7 +11,7 @@ router.post("/SignUp",async (req,res)=>{
     if(!parseUsers.success) return res.status(411).json({msg:"Your input is invalid"})
     const userExist=await users.findOne({UserName:req.body.UserName})
     if(userExist) return res.status(411).json({msg:"Email_Id is already Taken"})
-    const createUser=await users.create({
+    const createUser=await  users.create({
       UserName:User.UserName,
       FirstName:User.FirstName,
       LastName:User.LastName,

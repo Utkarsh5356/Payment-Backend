@@ -1,4 +1,5 @@
 const mongoose=require('mongoose')
+const bcrypt=require('bcrypt')
 mongoose.connect("mongodb+srv://utkarshbw:Utkarsh420@cluster0.te2ejg1.mongodb.net/")
 
 const signupSchema=new mongoose.Schema({
@@ -29,6 +30,15 @@ const signupSchema=new mongoose.Schema({
         minLength:6
     }
 });
+signupSchema.pre('save',async function(next){
+if(!this.isModified('Password')) return next()
+    const salt=await  bcrypt.genSalt(10);
+   this.Password= await bcrypt.hash(this.Password,salt);next();
+})
+
+signupSchema.methods.validatePassword=async function(candidatePassword){
+    return await bcrypt.compare(candidatePassword,this.Password)
+}
 
 const accountSchema=new mongoose.Schema({
     userId:{
