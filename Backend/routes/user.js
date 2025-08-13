@@ -5,13 +5,15 @@ const {users,account}=require('../database/db')
 const {addUser,checkUser,updateUser}=require('../Type/types')
 const JwtSecret=require('../config');
 const authMiddleware = require('../Middleware/auth');
+const bcrypt=require("bcrypt")
+
 router.post("/SignUp",async (req,res)=>{
   const User=req.body;
     const parseUsers=addUser.safeParse(User);
     if(!parseUsers.success) return res.status(411).json({msg:"Your input is invalid"})
     const userExist=await users.findOne({UserName:req.body.UserName})
     if(userExist) return res.status(411).json({msg:"Email_Id is already Taken"})
-    const createUser=await  users.create({
+    const createUser=await users.create({
       UserName:User.UserName,
       FirstName:User.FirstName,
       LastName:User.LastName,
@@ -33,12 +35,14 @@ router.post("/SignIn",async (req,res)=>{
     const {success}=checkUser.safeParse(User);
     if(!success) return res.status(411).json({msg:"Incorrect Inputs"})
     const check=await users.findOne({
-        UserName:User.UserName,
-        Password:User.Password
+        UserName:User.UserName
     })
     if(!check){
-     return  res.status(411).json({msg:"Error while logging in"})
+     return  res.status(411).json({msg:"User not found"})
     } 
+    const isMatch=await bcrypt.compare(User.Password,check.Password)
+    if(!isMatch) return res.status(401).json({msg:"Invalid password"})
+      
     const token=jwt.sign({userId:check._id},JwtSecret);
     res.json({Token:token})
     

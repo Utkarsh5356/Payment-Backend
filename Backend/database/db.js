@@ -35,11 +35,6 @@ if(!this.isModified('Password')) return next()
     const salt=await  bcrypt.genSalt(10);
    this.Password= await bcrypt.hash(this.Password,salt);next();
 })
-
-signupSchema.methods.validatePassword=async function(candidatePassword){
-    return await bcrypt.compare(candidatePassword,this.Password)
-}
-
 const accountSchema=new mongoose.Schema({
     userId:{
         type:mongoose.Schema.Types.ObjectId,

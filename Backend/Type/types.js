@@ -16,7 +16,7 @@ const updateUser=zod.object({
     Password:zod.string().optional()
 })
 const transfer=zod.object({ 
-  amount:zod.number().int(),
+  amount:zod.string(),
   to:zod.string().refine((val)=>{
     return mongoose.Types.ObjectId.isValid(val)
   }),
